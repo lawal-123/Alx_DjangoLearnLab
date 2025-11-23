@@ -5,11 +5,14 @@ from . import views
 from .views import LibraryDetailView
 
 urlpatterns = [
-    # 1. Function-based view URL (e.g., /app/books/)
-    path('books/', views.list_all_books, name='list_all_books'),
+    # URL for Function-based View (FBV)
+    # Accessible via: /relationship/books/
+    path('books/', views.book_list_view, name='book-list'),
     
-    # 2. Class-based view URL (e.g., /app/library/1/)
-    # The <int:pk> captures the primary key (ID) of the Library object 
-    # to be displayed.
-    path('library/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
+    # URL for Class-based View (CBV)
+    # Accessible via: /relationship/library/1/ (where 1 is the primary key)
+    path('library/<int:pk>/', LibraryDetailView.as_view(), name='library-detail'),
 ]
+
+# Don't forget to include this app's urls.py in your main project's urls.py 
+# (e.g., path('relationship/', include('relationship_app.urls')) )

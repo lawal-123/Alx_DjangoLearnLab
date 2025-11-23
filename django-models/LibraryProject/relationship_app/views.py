@@ -2,48 +2,45 @@
 
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView
-from .models import Book, Library
+# Assuming your models are defined in .models
+from .models import Book, Library 
 
-# --- Function-based View ---
+### Function-based View (FBV): List all Books ###
 
-def list_all_books(request):
+def book_list_view(request):
     """
-    Lists all Book objects in the database and renders them using a template.
-    This view demonstrates a simple list query (Book.objects.all()).
+    Lists all books from the database and renders them using list_books.html.
     """
-    # Query all books, ordering by title
-    all_books = Book.objects.select_related('author').order_by('title')
+    # Query all Book objects
+    all_books = Book.objects.all()
     
+    # Context to pass to the template
     context = {
         'books': all_books
     }
     
-    # Renders the HTML template list_books.html
+    # Render the template
     return render(request, 'relationship_app/list_books.html', context)
 
 
-# --- Class-based View (DetailView) ---
+### Class-based View (CBV): Library Detail ###
 
 class LibraryDetailView(DetailView):
     """
-    Displays details for a specific Library, including all books associated 
-    via the ManyToManyField.
-    This view demonstrates retrieving a single object and accessing its 
-    ManyToManyField relationship (library.books.all()).
+    Displays details for a specific Library, including all books in it.
+    Uses Django's DetailView.
     """
-    # Model to query
+    # 1. Specify the model to use for the primary object
     model = Library
     
-    # Template to use
+    # 2. Specify the template file to render
     template_name = 'relationship_app/library_detail.html'
     
-    # The URL pattern will use 'pk' (primary key) to look up the library object
-    context_object_name = 'library'
-
-    # Optimization: Use select_related/prefetch_related for associated data.
-    # Since 'books' is ManyToMany, we use prefetch_related.
-    # We also prefetch the author for each book to avoid N+1 queries in the template.
-    def get_queryset(self):
-        return Library.objects.prefetch_related(
-            'books__author'
-        )
+    # 3. Specify the context variable name (optional, defaults to 'object' or 'library')
+    context_object_name = 'library' 
+    
+    # DetailView automatically fetches the object based on the primary key 
+    # passed in the URL (typically 'pk').
+    
+    # Note: The template uses {{ library.books.all }} to access the related books 
+    # based on the model's reverse relationship.
