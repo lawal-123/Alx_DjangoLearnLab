@@ -3,7 +3,7 @@
 from django.shortcuts import render
 from django.views.generic import DetailView
 # --- 🛑 FIX THIS IMPORT 🛑 ---
-from .models import Book, Library 
+from .models import  Library 
 
 ### Function-based View (FBV): List all Books ###
 
