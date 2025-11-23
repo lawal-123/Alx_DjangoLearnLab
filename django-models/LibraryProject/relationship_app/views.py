@@ -1,33 +1,25 @@
 # relationship_app/views.py
 
-from django.shortcuts import render
-from django.views.generic import DetailView
-# --- 🛑 FIX THIS IMPORT 🛑 ---
-from .models import  Library 
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login # Import the login function
 
-### Function-based View (FBV): List all Books ###
+# ... (Keep your existing views: book_list_view, LibraryDetailView) ...
 
-def book_list_view(request):
-    """
-    Lists all books from the database and renders them using list_books.html.
-    """
-    all_books = Book.objects.all()
-    
-    context = {
-        'books': all_books
-    }
-    
-    return render(request, 'relationship_app/list_books.html', context)
-
-
-### Class-based View (CBV): Library Detail ###
-
-class LibraryDetailView(DetailView):
-    """
-    Displays details for a specific Library, including all books in it.
-    Uses Django's DetailView.
-    """
-    # This requires the 'Library' model to be imported above.
-    model = Library
-    template_name = 'relationship_app/library_detail.html'
-    context_object_name = 'library'
+# --- Registration View ---
+def register_view(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            # Save the new user
+            user = form.save()
+            # Log the user in immediately after registration
+            login(request, user) 
+            # Redirect to a desired page (e.g., the book list)
+            return redirect('book-list') 
+    else:
+        form = UserCreationForm()
+        
+    context = {'form': form}
+    # Renders the provided register.html template
+    return render(request, 'relationship_app/register.html', context)
