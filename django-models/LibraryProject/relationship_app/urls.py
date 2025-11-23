@@ -26,4 +26,10 @@ urlpatterns = [
     path('admin-panel/', views.admin_view, name='admin_panel'),
     path('librarian-dashboard/', views.librarian_view, name='librarian_dashboard'),
     path('member-area/', views.member_view, name='member_area'),
+    path('books/add/', views.book_create_view, name='book_create'),
+    path('books/<int:pk>/edit/', views.book_update_view, name='book_update'),
+    path('books/<int:pk>/delete/', views.book_delete_view, name='book_delete'),
+    
+    # URL for successful redirects (must exist)
+    path('books/', views.book_list, name='book_list'),
 ]

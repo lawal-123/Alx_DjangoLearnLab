@@ -1,37 +1,71 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import permission_required
 from django.urls import reverse_lazy
+from .models import Book
+# from .forms import BookForm # Assuming you have a BookForm
 
-# --- Helper Functions for Role Checking ---
+# --- Placeholder/Simplified Components ---
+# Replace these with your actual form and redirect target logic
+class BookForm:
+    def __init__(self, *args, **kwargs):
+        pass 
+    def is_valid(self):
+        return True
+    def save(self):
+        return Book.objects.create(title="New Book", author="Unknown", isbn="1234567890123") 
 
-def is_admin(user):
-    """Check if the user has the 'Admin' role."""
-    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
+def book_list(request):
+    """Placeholder view for redirecting after CRUD operations"""
+    books = Book.objects.all()
+    return render(request, 'book_list.html', {'books': books})
 
-def is_librarian(user):
-    """Check if the user has the 'Librarian' role."""
-    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
+# --- Secured Views with @permission_required ---
 
-def is_member(user):
-    """Check if the user has the 'Member' role."""
-    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
+# 1. View to Add a Book (Create)
+@permission_required('relationship_app.can_add_book', login_url=reverse_lazy('login'))
+def book_create_view(request):
+    """Allows creating a new book, requires 'can_add_book'."""
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            # form.save() # Use this with a real form
+            form.save() # Placeholder save
+            return redirect('book_list')
+    else:
+        form = BookForm()
+    
+    return render(request, 'book_form.html', {'form': form, 'action': 'Add'})
 
-# --- Role-Based Views ---
+# 2. View to Edit a Book (Update)
+@permission_required('relationship_app.can_change_book', login_url=reverse_lazy('login'))
+def book_update_view(request, pk):
+    """Allows editing an existing book, requires 'can_change_book'."""
+    book = get_object_or_404(Book, pk=pk)
+    
+    if request.method == 'POST':
+        # form = BookForm(request.POST, instance=book) # Use this with a real form
+        # if form.is_valid():
+        #     form.save()
+        #     return redirect('book_list')
+        
+        # Placeholder logic for demonstration:
+        book.title = request.POST.get('title', book.title) 
+        book.save()
+        return redirect('book_list')
 
-# The 'login_url' parameter directs unauthorized users to the login page.
-# The files are named as requested (admin_view, librarian_view, member_view).
+    else:
+        form = BookForm(instance=book)
 
-@user_passes_test(is_admin, login_url=reverse_lazy('login')) # Assuming 'login' is your login URL name
-def admin_view(request):
-    """Admin-only content."""
-    return render(request, 'admin_view.html', {'role': 'Admin'})
+    return render(request, 'book_form.html', {'form': form, 'action': 'Edit', 'book': book})
 
-@user_passes_test(is_librarian, login_url=reverse_lazy('login'))
-def librarian_view(request):
-    """Librarian-only content."""
-    return render(request, 'librarian_view.html', {'role': 'Librarian'})
-
-@user_passes_test(is_member, login_url=reverse_lazy('login'))
-def member_view(request):
-    """Member-only content."""
-    return render(request, 'member_view.html', {'role': 'Member'})
+# 3. View to Delete a Book (Delete)
+@permission_required('relationship_app.can_delete_book', login_url=reverse_lazy('login'))
+def book_delete_view(request, pk):
+    """Allows deleting a book, requires 'can_delete_book'."""
+    book = get_object_or_404(Book, pk=pk)
+    
+    if request.method == 'POST':
+        book.delete()
+        return redirect('book_list')
+        
+    return render(request, 'book_confirm_delete.html', {'book': book})
