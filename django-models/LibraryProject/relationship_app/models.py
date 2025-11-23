@@ -1,38 +1,34 @@
-# relationship_app/models.py
-
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
-class Author(models.Model):
-    """Represents the creator of books (One-to-Many target)."""
-    name = models.CharField(max_length=100)
+class UserProfile(models.Model):
+    # Choices for the user role
+    ROLE_CHOICES = (
+        ('Admin', 'Admin'),
+        ('Librarian', 'Librarian'),
+        ('Member', 'Member'),
+    )
 
-    def __str__(self):
-        return self.name
-
-class Book(models.Model):
-    """Represents a book."""
-    title = models.CharField(max_length=200)
-    # One-to-Many relationship: One Author can have many Books.
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
-
-    def __str__(self):
-        return self.title
-
-class Library(models.Model):
-    """Represents a physical library building."""
-    name = models.CharField(max_length=100)
-    # Many-to-Many relationship: A Library can have many Books, and a Book 
-    # can be in many Libraries.
-    books = models.ManyToManyField(Book, related_name='libraries')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Member')
 
     def __str__(self):
-        return self.name
+        return f"{self.user.username} - {self.role}"
 
-class Librarian(models.Model):
-    """Represents the head librarian."""
-    name = models.CharField(max_length=100)
-    # One-to-One relationship: One Library has exactly one Librarian.
-    library = models.OneToOneField(Library, on_delete=models.CASCADE, primary_key=True, related_name='librarian')
+# Signal to automatically create a UserProfile when a User is created
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
 
-    def __str__(self):
-        return self.name
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    # Ensure the profile exists before trying to save it
+    try:
+        instance.userprofile.save()
+    except UserProfile.DoesNotExist:
+        # If the profile doesn't exist (e.g., if a user was created without the signal running), 
+        # this will create it, though the 'create_user_profile' should handle it.
+        UserProfile.objects.create(user=instance)

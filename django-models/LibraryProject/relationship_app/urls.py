@@ -23,4 +23,7 @@ urlpatterns = [
     # Logout (Built-in Class-based View)
     # The default behavior is to log out and redirect to LOGOUT_REDIRECT_URL
     path('logout/', LogoutView.as_view(template_name='relationship_app/logout.html'), name='logout'),
+    path('admin-panel/', views.admin_view, name='admin_panel'),
+    path('librarian-dashboard/', views.librarian_view, name='librarian_dashboard'),
+    path('member-area/', views.member_view, name='member_area'),
 ]
