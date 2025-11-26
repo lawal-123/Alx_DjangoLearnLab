@@ -127,4 +127,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/relationship/books/'  # Change this to your desired URL name or path
 # URL to redirect to after a user logs out
 LOGOUT_REDIRECT_URL = '/relationship/login/'   # Redirect back to the login page
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
