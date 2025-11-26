@@ -1,14 +1,29 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 class Book(models.Model):
     title = models.CharField(max_length=200)
-    author = models.CharField(max_length=100)
-    publication_year = models.DateField()
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    published_date = models.DateField(auto_now_add=True)
 
-def __str__(self):
-    return self.title
+    class Meta:
+        verbose_name = "Book"
+        verbose_name_plural = "Books"
+        
+        # --- Custom Permissions Defined Here ---
+        permissions = [
+            # The permission codename is 'can_view', 'can_create', etc.
+            # The permission name is the human-readable description.
+            ("can_view", "Can view book details"),
+            ("can_create", "Can create new books"),
+            ("can_edit", "Can edit existing books"),
+            ("can_delete", "Can delete books"),
+        ]
+
+    def __str__(self):
+        return self.title
 
 class CustomUserManager(BaseUserManager):
     """
