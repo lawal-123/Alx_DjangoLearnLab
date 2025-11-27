@@ -19,3 +19,8 @@ class BookSearchForm(forms.Form):
             'placeholder': 'Enter title or author'
         })
     )
+    # Example of ExampleForm (if required)
+class ExampleForm(forms.Form):
+    # Add relevant fields here
+    name = forms.CharField(label='Your Name', max_length=100)
+    email = forms.EmailField(label='Your Email')
