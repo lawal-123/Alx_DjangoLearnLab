@@ -1,6 +1,59 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponseForbidden, HttpResponse
+from django.shortcuts import render
+from django.db import connection, models
+from .models import Book # Assuming a simple Book model
+from .forms import BookSearchForm # Assuming you create this form
+def book_search(request):
+    search_results = Book.objects.none()
+    form = BookSearchForm(request.GET)
+
+    if form.is_valid():
+        # Step 3: Secure Data Access (SQL Injection Prevention)
+        # 1. Input is validated and sanitized by Django Forms.
+        query = form.cleaned_data.get('query')
+
+        if query:
+            # 2. Use the Django ORM's 'filter' and 'icontains' methods.
+            # The ORM handles all necessary query parameterization, making it safe.
+            search_results = Book.objects.filter(
+                models.Q(title__icontains=query) | models.Q(author__icontains=query)
+            )
+            
+    context = {
+        'form': form,
+        'search_results': search_results,
+        'query': query if 'query' in locals() else '',
+    }
+    
+    # 3. Template Rendering: By default, Django templates automatically escape 
+    # potentially harmful characters (like '<', '>', '&') when displaying variables 
+    # (e.g., {{ query }}), which is the primary defense against non-context-aware XSS.
+    return render(request, 'bookshelf/book_list.html', context)
+
+
+# Example of a DANGEROUS function (DO NOT USE THIS APPROACH)
+def dangerous_search_view(request):
+    # DANGER: THIS IS VULNERABLE TO SQL INJECTION!
+    # A malicious user could set 'search_term' to: 'title' OR 1=1 --
+    search_term = request.GET.get('term', '') 
+    
+    # This direct string interpolation is a major security flaw.
+    # NEVER DO THIS!
+    # sql_query = f"SELECT * FROM bookshelf_book WHERE title = '{search_term}';" 
+
+    # CORRECT WAY FOR RAW SQL (If ORM cannot be used):
+    # Use the connection.cursor().execute() method with a tuple of parameters.
+    # The database adapter handles the escaping/parameterization.
+    if search_term:
+        with connection.cursor() as cursor:
+            # The query string uses '%s' as a placeholder.
+            # The second argument is a tuple of values to be substituted.
+            cursor.execute("SELECT * FROM bookshelf_book WHERE title = %s", [search_term]) 
+            # Process results safely...
+
+    return render(request, 'bookshelf/book_list.html', {})
 
 from .models import Book
 # Assuming you have a form for the Book model

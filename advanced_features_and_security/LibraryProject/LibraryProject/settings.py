@@ -129,3 +129,70 @@ LOGIN_REDIRECT_URL = '/relationship/books/'  # Change this to your desired URL n
 # URL to redirect to after a user logs out
 LOGOUT_REDIRECT_URL = '/relationship/login/'   # Redirect back to the login page
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
+# LibraryProject/settings.py
+
+# --- Security Configuration ---
+
+# 1. Set DEBUG to False in production for security. 
+# This prevents displaying potentially sensitive configuration and tracebacks to users.
+DEBUG = False
+
+# Remember to define ALLOWED_HOSTS when DEBUG is False!
+ALLOWED_HOSTS = ['yourdomain.com', '127.0.0.1', 'localhost'] 
+
+# --- Cookie Security (Requires HTTPS) ---
+
+# Enforce that the CSRF cookie is only sent over a secure (HTTPS) connection.
+CSRF_COOKIE_SECURE = True
+# Enforce that the session cookie is only sent over a secure (HTTPS) connection.
+SESSION_COOKIE_SECURE = True
+# Prevent client-side JavaScript from accessing the session cookie.
+SESSION_COOKIE_HTTPONLY = True 
+
+# --- Browser/Header Protections ---
+
+# Prevents the browser from attempting to sniff the content type, 
+# which can mitigate certain XSS risks.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Explicitly enable the browser's XSS filtering mechanism (though modern browsers 
+# do this by default, it's good practice to set it).
+SECURE_BROWSER_XSS_FILTER = True
+
+# Protection against Clickjacking: 
+# Denies permission to frame the page (recommended for most applications).
+# Other options: 'SAMEORIGIN'
+X_FRAME_OPTIONS = 'DENY'
+
+# --- HSTS (HTTP Strict Transport Security) ---
+
+# Tells the browser to only communicate with the site using HTTPS for the specified 
+# duration (e.g., 31536000 seconds = 1 year). 
+# Note: Requires HTTPS to be set up on your server.
+SECURE_HSTS_SECONDS = 31536000  # Set to a high value like 1 year (31536000 seconds)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True # Optional, for HSTS preloading services
+
+# --- Content Security Policy (CSP) Setup ---
+# (Assuming you install and use the 'django-csp' package)
+# Run: pip install django-csp
+MIDDLEWARE = [
+    # ... other middleware
+    'django.middleware.security.SecurityMiddleware',
+    # ... other middleware
+    # Add CSP middleware near the top (after SecurityMiddleware)
+    'csp.middleware.CspMiddleware',
+    # ... other middleware
+]
+
+# Basic CSP configuration example (adjust for your needs)
+# This policy is quite restrictive and helps prevent XSS by controlling resource loading.
+CSP_DEFAULT_SRC = ("'self'",) 
+CSP_SCRIPT_SRC = ("'self'", 'https://cdn.jsdelivr.net',) # Example: allow scripts from self and a CDN
+CSP_STYLE_SRC = ("'self'", 'https://fonts.googleapis.com',) # Example: allow styles from self and Google Fonts
+CSP_IMG_SRC = ("'self'", 'data:',) # Example: allow images from self and data URIs
+CSP_FONT_SRC = ("'self'", 'https://fonts.gstatic.com',) # Example: allow fonts from self and Google Fonts
+CSP_CONNECT_SRC = ("'self'",) 
+CSP_OBJECT_SRC = ("'none'",) # Block plugins/objects
+
+# ... rest of settings.py
