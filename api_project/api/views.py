@@ -1,26 +1,37 @@
 # api/views.py
-from rest_framework import viewsets
-from rest_framework import generics
-# Import the Book model
+
+from rest_framework import generics, viewsets, permissions
 from bookshelf.models import Book
-# Import the newly created serializer
 from .serializers import BookSerializer
 
-class BookList(generics.ListAPIView):
+# ... BookList definition ...
+
+# --- Step 3: Define Permission Classes for ViewSet ---
+class BookViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows listing all Book instances.
-    It provides read-only access to the list of books.
+    ViewSet for Books, secured with Token Authentication and custom permissions.
     """
-    # 1. Define the queryset: Which records to retrieve (all books)
     queryset = Book.objects.all()
-    
-    # 2. Define the serializer_class: How to format the retrieved data
     serializer_class = BookSerializer
 
-    # Optional: Configure permissions for read-only access (Good security practice)
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    class BookViewSet(viewsets.ModelViewSet):
-        queryset = Book.objects.all()
-    
-    # 2. Define the serializer used for input validation and output formatting
-    serializer_class = BookSerializer
+    # SECURITY: Define the base permission class for the whole ViewSet
+    # This setting requires authentication for *all* methods by default.
+    permission_classes = [permissions.IsAuthenticated] 
+
+    # SECURITY: Use a dictionary to override permissions for specific actions (methods).
+    # This is standard practice for role-based access control.
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        # Read-only actions (GET/HEAD/OPTIONS)
+        if self.action in ['list', 'retrieve']:
+            # Allows authenticated users to view the list and details
+            return [permissions.IsAuthenticated()] 
+        
+        # Write actions (POST/PUT/PATCH/DELETE)
+        elif self.action in ['create', 'update', 'partial_update', 'destroy']:
+            # RESTRICTS write access to only Admin users (e.g., staff/superusers)
+            return [permissions.IsAdminUser()]
+        
+        return super().get_permissions()
