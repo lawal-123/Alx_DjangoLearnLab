@@ -196,3 +196,72 @@ CSP_CONNECT_SRC = ("'self'",)
 CSP_OBJECT_SRC = ("'none'",) # Block plugins/objects
 
 # ... rest of settings.py
+# LibraryProject/settings.py
+
+# --- Deployment & Security Pre-requisites ---
+
+# Set to False in production. If True, Django will not redirect to HTTPS (Step 1).
+DEBUG = False
+
+# Must be set when DEBUG is False.
+ALLOWED_HOSTS = ['yourdomain.com', '127.0.0.1', 'localhost']
+
+# Ensure the SecurityMiddleware is included in the list
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',  # Crucial for security headers and redirects
+    # ... other middleware
+]
+
+# --- Step 1: Configure Django for HTTPS Support ---
+
+# SECURITY: Set to True to redirect all HTTP requests to HTTPS (301 Permanent Redirect).
+# Requires HTTPS to be correctly configured on your web server.
+SECURE_SSL_REDIRECT = True
+
+# SECURITY: HTTP Strict Transport Security (HSTS)
+# Instructs browsers that the site should ONLY be accessed using HTTPS 
+# for the specified duration (e.g., 31536000 seconds = 1 year).
+# This prevents man-in-the-middle attacks that downgrade connections to HTTP.
+SECURE_HSTS_SECONDS = 31536000
+
+# SECURITY: HSTS: Apply HSTS policy to all subdomains.
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# SECURITY: HSTS: Allows submission of the domain to browser HSTS preload lists.
+SECURE_HSTS_PRELOAD = True
+
+# SECURITY: By default, Django does not require a client certificate, 
+# but this setting can be used to control the scheme detection for redirecting.
+USE_X_FORWARDED_PROTO = True # Necessary if running behind a proxy (like Nginx/Apache)
+
+# --- Step 2: Enforce Secure Cookies ---
+
+# SECURITY: Ensures the session cookie is only sent by the browser over a 
+# secure (HTTPS) connection.
+SESSION_COOKIE_SECURE = True
+
+# SECURITY: Ensures the CSRF cookie is only sent by the browser over a 
+# secure (HTTPS) connection.
+CSRF_COOKIE_SECURE = True
+
+# SECURITY: Prevents client-side JavaScript from accessing the session cookie, 
+# mitigating Cross-Site Scripting (XSS) risks related to session hijacking.
+SESSION_COOKIE_HTTPONLY = True
+
+# --- Step 3: Implement Secure Headers ---
+
+# SECURITY: Clickjacking Protection
+# Set to 'DENY' to prevent your site from being loaded in an iframe, 
+# preventing clickjacking attacks.
+X_FRAME_OPTIONS = 'DENY'
+
+# SECURITY: MIME Type Sniffing Prevention
+# Set to True to send the X-Content-Type-Options: nosniff header. 
+# Prevents browsers from attempting to guess the content type of files, 
+# which can mitigate certain XSS risks.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# SECURITY: Browser XSS Filter
+# Set to True to send the X-XSS-Protection: 1; mode=block header. 
+# This helps enable the built-in XSS filter in older browsers.
+SECURE_BROWSER_XSS_FILTER = True
