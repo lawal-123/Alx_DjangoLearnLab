@@ -197,7 +197,7 @@ CSP_OBJECT_SRC = ("'none'",) # Block plugins/objects
 
 # ... rest of settings.py
 # LibraryProject/settings.py
-
+["SECURE_PROXY_SSL_HEADER", "HTTP_X_FORWARDED_PROTO"]
 # --- Deployment & Security Pre-requisites ---
 
 # Set to False in production. If True, Django will not redirect to HTTPS (Step 1).
