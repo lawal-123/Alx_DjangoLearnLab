@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.db import connection, models
 from .models import Book # Assuming a simple Book model
 from .forms import BookSearchForm # Assuming you create this form
+from .forms import ExampleForm
 def book_search(request):
     search_results = Book.objects.none()
     form = BookSearchForm(request.GET)
