@@ -1,5 +1,5 @@
 # api/views.py
-
+from rest_framework import viewsets
 from rest_framework import generics
 # Import the Book model
 from bookshelf.models import Book
@@ -19,3 +19,8 @@ class BookList(generics.ListAPIView):
 
     # Optional: Configure permissions for read-only access (Good security practice)
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    class BookViewSet(viewsets.ModelViewSet):
+        queryset = Book.objects.all()
+    
+    # 2. Define the serializer used for input validation and output formatting
+    serializer_class = BookSerializer
