@@ -110,7 +110,13 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+# myproject/settings.py (at the bottom)
 
+# Where to redirect after successful login (uses the name defined in urls.py)
+LOGIN_REDIRECT_URL = 'blog-home' # Assuming your main blog list is named 'blog-home'
+
+# Where to redirect users who try to access a @login_required page without logging in
+LOGIN_URL = 'login'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
