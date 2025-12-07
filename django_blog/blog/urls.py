@@ -18,3 +18,31 @@ urlpatterns = [
     # Built-in Logout View
     path('logout/', LogoutView.as_view(template_name='blog/logout.html'), name='logout'), 
 ]
+# blog/urls.py (Update your existing file)
+from django.urls import path
+from django.contrib.auth.views import LoginView, LogoutView
+from . import views # Assuming your custom views (register, profile) are still here
+
+urlpatterns = [
+    # ------------------ Blog Posts (CRUD) ------------------
+    # R (List) - Accessible to all
+    path('', views.PostListView.as_view(), name='blog-home'),
+    
+    # C (Create) - Requires Login
+    path('post/new/', views.PostCreateView.as_view(), name='post-create'),
+    
+    # R (Detail) - Accessible to all
+    path('post/<int:pk>/', views.PostDetailView.as_view(), name='post-detail'),
+    
+    # U (Update) - Requires Login and Author check
+    path('post/<int:pk>/update/', views.PostUpdateView.as_view(), name='post-update'),
+    
+    # D (Delete) - Requires Login and Author check
+    path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post-delete'),
+    
+    # ------------------ Authentication (Existing Paths) ------------------
+    path('register/', views.register, name='register'),
+    path('profile/', views.profile, name='profile'), 
+    path('login/', LoginView.as_view(template_name='blog/login.html'), name='login'),
+    path('logout/', LogoutView.as_view(template_name='blog/logout.html'), name='logout'), 
+]

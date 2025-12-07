@@ -21,3 +21,17 @@ class BlogUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+# blog/forms.py (Add this to your existing file)
+from django import forms
+from .models import Post
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        # Fields the user will input via the form
+        fields = ['title', 'content'] 
+        # Optional: Add form widgets for better appearance/control
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control'}),
+        }
