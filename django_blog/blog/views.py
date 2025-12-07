@@ -110,7 +110,32 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         post = self.get_object()
         # Returns True if the current user is the author of the post
         return self.request.user == post.author
+# blog/forms.py (Add this to your existing file)
+from django import forms
+from .models import Comment
+# ... (Your existing forms like PostForm, BlogUserCreationForm)
 
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        # Only the content is input by the user. post and author are set by the view.
+        fields = ['content'] 
+        
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Write your comment here...'}),
+        }
+# blog/views.py (Update PostDetailView)
+from .forms import CommentForm # Make sure this is imported
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'blog/post_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Pass an empty CommentForm to display on the detail page
+        context['form'] = CommentForm() 
+        return context
 # --- Other Views (kept for context) ---
 # Assuming you have a basic home view mapped to PostListView
 # and the authentication views (register, profile) defined previously.

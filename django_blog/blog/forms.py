@@ -35,3 +35,17 @@ class PostForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'content': forms.Textarea(attrs={'class': 'form-control'}),
         }
+# blog/forms.py (Add this to your existing file)
+from django import forms
+from .models import Comment
+# ... (Your existing forms like PostForm, BlogUserCreationForm)
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        # Only the content is input by the user. post and author are set by the view.
+        fields = ['content'] 
+        
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Write your comment here...'}),
+        }

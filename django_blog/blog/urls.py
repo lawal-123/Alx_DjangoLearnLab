@@ -46,3 +46,20 @@ urlpatterns = [
     path('login/', LoginView.as_view(template_name='blog/login.html'), name='login'),
     path('logout/', LogoutView.as_view(template_name='blog/logout.html'), name='logout'), 
 ]
+# blog/urls.py (Add these paths to your existing file)
+from . import views 
+# ... (Your existing urlpatterns)
+
+urlpatterns = [
+    # ... (Existing Post CRUD URLS, e.g., path('post/<int:pk>/', views.PostDetailView.as_view(), name='post-detail'), )
+
+    # ------------------ Comment URLs ------------------
+    # C (Create Comment) - Linked to a specific Post PK
+    path('post/<int:post_pk>/comment/new/', views.CommentCreateView.as_view(), name='comment-create'),
+    
+    # U (Update Comment) - Linked to a specific Comment PK
+    path('comment/<int:pk>/update/', views.CommentUpdateView.as_view(), name='comment-update'),
+    
+    # D (Delete Comment) - Linked to a specific Comment PK
+    path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='comment-delete'),
+]
