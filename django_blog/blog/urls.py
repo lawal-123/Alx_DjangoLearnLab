@@ -22,7 +22,7 @@ urlpatterns = [
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views # Assuming your custom views (register, profile) are still here
-
+post/<int:pk>/comments/new/
 urlpatterns = [
     # ------------------ Blog Posts (CRUD) ------------------
     # R (List) - Accessible to all
