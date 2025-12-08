@@ -2,7 +2,7 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView 
 from . import views
-
+PostByTagListView.as_view()
 urlpatterns = [
     # ... your existing blog paths (e.g., path('', views.home, name='blog-home'))
     
