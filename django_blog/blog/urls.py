@@ -22,7 +22,7 @@ urlpatterns = [
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views # Assuming your custom views (register, profile) are still here
-
+post/<int:pk>/comments/new/
 urlpatterns = [
     # ------------------ Blog Posts (CRUD) ------------------
     # R (List) - Accessible to all
@@ -63,6 +63,7 @@ urlpatterns = [
     # D (Delete Comment) - Linked to a specific Comment PK
     path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='comment-delete'),
 ]
+<<<<<<< HEAD
 # blog/urls.py (Update your existing file)
 from . import views 
 # ... (other imports)
@@ -79,3 +80,5 @@ urlpatterns = [
     
     # ... (Existing Auth/Comment URLS)
 ]
+=======
+>>>>>>> b60b14184bfbdb1c919c1043feefa8773f224f02

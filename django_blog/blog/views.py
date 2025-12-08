@@ -6,7 +6,7 @@ from django.contrib import messages
 from .forms import BlogUserCreationForm # Our custom form
 
 # ----------------- Registration View -----------------
-
+"CommentCreateView", "CommentUpdateView", "CommentDeleteView
 def register(request):
     if request.method == 'POST':
         form = BlogUserCreationForm(request.POST)
