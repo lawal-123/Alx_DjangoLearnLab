@@ -49,3 +49,21 @@ class CommentForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Write your comment here...'}),
         }
+# blog/forms.py (Update PostForm)
+from django import forms
+from .models import Post, Comment
+# ... (other imports)
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        # Include 'tags' in the fields list
+        fields = ['title', 'content', 'tags'] 
+        
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control'}),
+            # django-taggit automatically uses a suitable widget, but we can style it:
+            'tags': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter tags separated by commas, e.g., django, python, tutorial'}),
+        }
+# ... (rest of the forms remain unchanged)

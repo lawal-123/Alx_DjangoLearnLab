@@ -136,6 +136,63 @@ class PostDetailView(DetailView):
         # Pass an empty CommentForm to display on the detail page
         context['form'] = CommentForm() 
         return context
+# blog/views.py (Add these views to your existing file)
+from django.db.models import Q # New Import
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView
+# ... (other imports like Post, PostListView, etc.)
+
+# --- Search Functionality ---
+class PostSearchView(ListView):
+    model = Post
+    template_name = 'blog/search_results.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q') # Get the search query from the URL
+        if query:
+            # Use Q objects for complex lookups: searching across title, content, OR tags
+            object_list = Post.objects.filter(
+                Q(title__icontains=query) | # Case-insensitive title match
+                Q(content__icontains=query) | # Case-insensitive content match
+                Q(tags__name__icontains=query) # Case-insensitive tag name match
+            ).distinct() # Use distinct to avoid duplicate results if a post matches multiple criteria
+        else:
+            object_list = Post.objects.none() # Return no results if no query
+            
+        return object_list.order_by('-published_date')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('q', '')
+        return context
+
+# --- Tag Filtering Functionality ---
+class PostTagView(ListView):
+    model = Post
+    template_name = 'blog/post_by_tag.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        # Filter posts by the tag slug passed in the URL
+        tag_slug = self.kwargs.get('tag_slug')
+        if tag_slug:
+            # Use TaggableManager's filter function
+            object_list = Post.objects.filter(tags__slug=tag_slug).order_by('-published_date')
+        else:
+            object_list = Post.objects.all().order_by('-published_date')
+
+        return object_list
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag_slug = self.kwargs.get('tag_slug')
+        # Get the actual tag name for display in the template
+        if tag_slug:
+             # Look up the tag by its slug to pass the name
+            from taggit.models import Tag
+            context['tag_name'] = get_object_or_404(Tag, slug=tag_slug).name
+        return context
 # --- Other Views (kept for context) ---
 # Assuming you have a basic home view mapped to PostListView
 # and the authentication views (register, profile) defined previously.

@@ -63,3 +63,19 @@ urlpatterns = [
     # D (Delete Comment) - Linked to a specific Comment PK
     path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='comment-delete'),
 ]
+# blog/urls.py (Update your existing file)
+from . import views 
+# ... (other imports)
+
+urlpatterns = [
+    # ... (Existing Post CRUD URLS)
+
+    # ------------------ Tagging and Search URLs ------------------
+    # Search URL
+    path('search/', views.PostSearchView.as_view(), name='post-search'),
+    
+    # Tag Filtering URL (uses the tag's slug)
+    path('tags/<slug:tag_slug>/', views.PostTagView.as_view(), name='posts-by-tag'),
+    
+    # ... (Existing Auth/Comment URLS)
+]
