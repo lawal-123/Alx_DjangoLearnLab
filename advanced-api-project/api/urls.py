@@ -1,20 +1,16 @@
-"""
-Step 2: Define URL Patterns
-
-This module defines the routing for the 'api' application, connecting URL paths
-to the generic views that handle CRUD operations for the Book model.
-"""
 from django.urls import path
-from .views import BookListCreateAPIView, BookRetrieveUpdateDestroyAPIView
+from .views import (
+    BookListView, 
+    BookDetailView, 
+    BookCreateView, 
+    BookUpdateView, 
+    BookDeleteView
+)
 
 urlpatterns = [
-    # List and Create Books:
-    # URL: /api/books/
-    # Methods: GET (List), POST (Create)
-    path('books/', BookListCreateAPIView.as_view(), name='book-list-create'),
-
-    # Retrieve, Update, and Destroy a specific Book:
-    # URL: /api/books/<int:pk>/
-    # Methods: GET (Retrieve), PUT (Update), PATCH (Partial Update), DELETE (Destroy)
-    path('books/<int:pk>/', BookRetrieveUpdateDestroyAPIView.as_view(), name='book-detail-update-destroy'),
+    path('books/', BookListView.as_view(), name='book-list'),
+    path('books/<int:pk>/', BookDetailView.as_view(), name='book-detail'),
+    path('books/create/', BookCreateView.as_view(), name='book-create'),
+    path('books/update/', BookUpdateView.as_view(), name='book-update'),
+    path('books/delete/', BookDeleteView.as_view(), name='book-delete'),
 ]
